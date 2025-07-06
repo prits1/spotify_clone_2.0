@@ -14,10 +14,10 @@ const PlaylistContextProvider = ({ children }) => {
   }, [playlists]);
 
   // Add a new playlist
-  const addPlaylist = (name) => {
+  const addPlaylist = (name, genre = "Other") => {
     setPlaylists((prev) => [
       ...prev,
-      { id: Date.now(), name, songs: [] }
+      { id: Date.now(), name, genre, songs: [] }
     ]);
   };
 

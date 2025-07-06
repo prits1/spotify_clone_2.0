@@ -8,12 +8,14 @@ const Sidebar = () => {
   const { playlists, addPlaylist, removePlaylist } = useContext(PlaylistContext);
   const [showModal, setShowModal] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
+  const [playlistGenre, setPlaylistGenre] = useState("Other");
 
   const handleCreatePlaylist = (e) => {
     e.preventDefault();
     if (playlistName.trim()) {
-      addPlaylist(playlistName.trim());
+      addPlaylist(playlistName.trim(), playlistGenre);
       setPlaylistName("");
+      setPlaylistGenre("Other");
       setShowModal(false);
     }
   };
@@ -52,15 +54,37 @@ const Sidebar = () => {
         </div>
         {/* Playlists List */}
         <div className='px-4'>
+          {/* Genre Filter Dropdown */}
+          <div className='mb-2'>
+            <label htmlFor='genreFilter' className='mr-2 text-sm'>Filter by Genre:</label>
+            <select
+              id='genreFilter'
+              value={playlistGenre}
+              onChange={e => setPlaylistGenre(e.target.value)}
+              className='px-2 py-1 rounded bg-[#181818] text-white border border-gray-600 focus:outline-none text-sm'
+            >
+              <option value="All">All</option>
+              <option value="Pop">Pop</option>
+              <option value="Rock">Rock</option>
+              <option value="Hip-Hop">Hip-Hop</option>
+              <option value="Classical">Classical</option>
+              <option value="Romance">Romance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
           {playlists.length === 0 && (
             <p className='text-gray-400 text-sm mt-2'>No playlists yet.</p>
           )}
-          {playlists.map((pl) => (
-            <div key={pl.id} className='flex items-center justify-between py-2 border-b border-[#242424]'>
-              <span className='truncate cursor-pointer' onClick={() => nav(`/playlist/${pl.id}`)}>{pl.name}</span>
-              <button className='text-red-400 ml-2' title='Delete Playlist' onClick={() => removePlaylist(pl.id)}>✕</button>
-            </div>
-          ))}
+          {playlists
+            .filter(pl => playlistGenre === 'All' || pl.genre === playlistGenre)
+            .map((pl) => (
+              <div key={pl.id} className='flex items-center justify-between py-2 border-b border-[#242424]'>
+                <span className='truncate cursor-pointer' onClick={() => nav(`/playlist/${pl.id}`)}>
+                  {pl.name} <span className='text-xs text-gray-400 ml-2'>[{pl.genre}]</span>
+                </span>
+                <button className='text-red-400 ml-2' title='Delete Playlist' onClick={() => removePlaylist(pl.id)}>✕</button>
+              </div>
+            ))}
         </div>
         {/* Modal for creating playlist */}
         {showModal && (
@@ -75,6 +99,18 @@ const Sidebar = () => {
                 className='px-3 py-2 rounded bg-[#181818] text-white border border-gray-600 focus:outline-none'
                 autoFocus
               />
+              <select
+                value={playlistGenre}
+                onChange={e => setPlaylistGenre(e.target.value)}
+                className='px-3 py-2 rounded bg-[#181818] text-white border border-gray-600 focus:outline-none'
+              >
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Hip-Hop">Hip-Hop</option>
+                <option value="Classical">Classical</option>
+                <option value="Romance">Romance</option>
+                <option value="Other">Other</option>
+              </select>
               <div className='flex gap-2 mt-2'>
                 <button type='submit' className='bg-green-500 px-4 py-1 rounded text-black font-semibold'>Create</button>
                 <button type='button' className='bg-gray-500 px-4 py-1 rounded text-white' onClick={() => setShowModal(false)}>Cancel</button>
